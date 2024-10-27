@@ -39,6 +39,7 @@
 	let STT_ENGINE = '';
 	let STT_MODEL = '';
 	let STT_WHISPER_MODEL = '';
+	let STT_WHISPER_LANGUAGE = '';
 
 	let STT_WHISPER_MODEL_LOADING = false;
 
@@ -103,7 +104,8 @@
 				OPENAI_API_KEY: STT_OPENAI_API_KEY,
 				ENGINE: STT_ENGINE,
 				MODEL: STT_MODEL,
-				WHISPER_MODEL: STT_WHISPER_MODEL
+				WHISPER_MODEL: STT_WHISPER_MODEL,
+				WHISPER_LANGUAGE: STT_WHISPER_LANGUAGE
 			}
 		});
 
@@ -143,6 +145,7 @@
 			STT_ENGINE = res.stt.ENGINE;
 			STT_MODEL = res.stt.MODEL;
 			STT_WHISPER_MODEL = res.stt.WHISPER_MODEL;
+			STT_WHISPER_LANGUAGE = res.stt.WHISPER_LANGUAGE;
 		}
 
 		await getVoices();
@@ -278,6 +281,19 @@
 							</button>
 						</div>
 
+                        <div>
+                            <div class="mt-2 mb-1.5 text-sm font-medium">{$i18n.t('STT Language')}</div>
+                            <div class="flex w-full">
+                                <div class="flex-1">
+                                    <input
+                                        class="flex-1 w-full rounded-lg py-2 pl-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-none"
+                                        placeholder={$i18n.t('Leave empty to auto-detect, or enter a custom language code')}
+                                        bind:value={STT_WHISPER_LANGUAGE}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
 						<div class="mt-2 mb-1 text-xs text-gray-400 dark:text-gray-500">
 							{$i18n.t(`Open WebUI uses faster-whisper internally.`)}
 
@@ -287,7 +303,7 @@
 								target="_blank"
 							>
 								{$i18n.t(
-									`Click here to learn more about faster-whisper and see the available models.`
+									`Click here to learn more about faster-whisper and see the available models and language codes.`
 								)}
 							</a>
 						</div>

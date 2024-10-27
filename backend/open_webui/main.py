@@ -2258,6 +2258,7 @@ async def get_app_config(request: Request):
                     },
                     "stt": {
                         "engine": audio_app.state.config.STT_ENGINE,
+                        "language": audio_app.state.config.WHISPER_LANGUAGE,
                     },
                 },
                 "file": {

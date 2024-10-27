@@ -26,6 +26,7 @@ from open_webui.config import (
     CACHE_DIR,
     CORS_ALLOW_ORIGIN,
     WHISPER_MODEL,
+    WHISPER_LANGUAGE,
     WHISPER_MODEL_AUTO_UPDATE,
     WHISPER_MODEL_DIR,
     AppConfig,
@@ -64,6 +65,7 @@ app.state.config.STT_ENGINE = AUDIO_STT_ENGINE
 app.state.config.STT_MODEL = AUDIO_STT_MODEL
 
 app.state.config.WHISPER_MODEL = WHISPER_MODEL
+app.state.config.WHISPER_LANGUAGE = WHISPER_LANGUAGE
 app.state.faster_whisper_model = None
 
 app.state.config.TTS_OPENAI_API_BASE_URL = AUDIO_TTS_OPENAI_API_BASE_URL
@@ -128,6 +130,7 @@ class STTConfigForm(BaseModel):
     ENGINE: str
     MODEL: str
     WHISPER_MODEL: str
+    WHISPER_LANGUAGE: str
 
 
 class AudioConfigUpdateForm(BaseModel):
@@ -182,6 +185,7 @@ async def get_audio_config(user=Depends(get_admin_user)):
             "ENGINE": app.state.config.STT_ENGINE,
             "MODEL": app.state.config.STT_MODEL,
             "WHISPER_MODEL": app.state.config.WHISPER_MODEL,
+            "WHISPER_LANGUAGE": app.state.config.WHISPER_LANGUAGE,
         },
     }
 
@@ -207,6 +211,7 @@ async def update_audio_config(
     app.state.config.STT_ENGINE = form_data.stt.ENGINE
     app.state.config.STT_MODEL = form_data.stt.MODEL
     app.state.config.WHISPER_MODEL = form_data.stt.WHISPER_MODEL
+    app.state.config.WHISPER_LANGUAGE = form_data.stt.WHISPER_LANGUAGE
     set_faster_whisper_model(form_data.stt.WHISPER_MODEL, WHISPER_MODEL_AUTO_UPDATE)
 
     return {
@@ -404,11 +409,17 @@ def transcribe(file_path):
             set_faster_whisper_model(app.state.config.WHISPER_MODEL)
 
         model = app.state.faster_whisper_model
-        segments, info = model.transcribe(file_path, beam_size=5)
-        log.info(
-            "Detected language '%s' with probability %f"
-            % (info.language, info.language_probability)
-        )
+
+        language = app.state.config.WHISPER_LANGUAGE
+        if language == "":
+            language = None
+
+        segments, info = model.transcribe(file_path, language=language, beam_size=5)
+        if not language:
+            log.info(
+                "Detected language '%s' with probability %f"
+                % (info.language, info.language_probability)
+            )
 
         transcript = "".join([segment.text for segment in list(segments)])
         data = {"text": transcript.strip()}

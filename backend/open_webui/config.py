@@ -1463,6 +1463,12 @@ WHISPER_MODEL = PersistentConfig(
     os.getenv("WHISPER_MODEL", "base"),
 )
 
+
+WHISPER_LANGUAGE = PersistentConfig(
+    "WHISPER_LANGUAGE",
+    "audio.stt.whisper_language",
+    os.getenv("WHISPER_LANGUAGE", "")
+)
 WHISPER_MODEL_DIR = os.getenv("WHISPER_MODEL_DIR", f"{CACHE_DIR}/whisper/models")
 WHISPER_MODEL_AUTO_UPDATE = (
     os.environ.get("WHISPER_MODEL_AUTO_UPDATE", "").lower() == "true"
